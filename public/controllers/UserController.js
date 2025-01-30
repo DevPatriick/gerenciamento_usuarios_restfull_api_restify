@@ -202,13 +202,41 @@ class UserController {
     // Obtém os usuários armazenados no localStorage.
     // Carrega todos os usuários armazenados e os exibe na tabela.
     selectAll(){
-        let users = User.getUserStorage();  // Obtém os usuários armazenados.
+        // let users = User.getUserStorage();  // Obtém os usuários armazenados.
 
-        users.forEach(data => {
+        let ajax = new XMLHttpRequest(); // chamando o ajax
+
+        // aqui eu o primeiro parametro é o metodo, no caso GET
+        // o segundo paramentro é a minha rota
+        ajax.open('GET', '/users');
+
+        // quando o ajax carregar ele executa o evento
+        ajax.onload = event=>{
+
+            let obj = { users: []}
+
+           try {
+            obj = JSON.parse(ajax.responseText);
+
+           } catch (error) {
+            console.error(`Error: ${error}`)
+           }
+
+            // responseText tras a resposta do servidor e coloca no obj
+          
+           // agora para percorrer o array tenho que colocar
+           // obj.users
+           obj.users.forEach(data => {
             let user = new User();  // Cria uma nova instância de User.
             user.loadFromJSON(data);  // Carrega os dados de cada usuário.
             this.addLine(user);  // Adiciona os dados à tabela.
         });
+        }
+
+   
+
+        ajax.send()
+       
     }
 
     // Adiciona uma nova linha à tabela com os dados do usuário.
