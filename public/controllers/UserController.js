@@ -203,13 +203,23 @@ class UserController {
     // Carrega todos os usuários armazenados e os exibe na tabela.
     selectAll() {
         // let users = User.getUserStorage();  // Obtém os usuários armazenados.
-        HttpRequest.get('/users').then(data=>{
+        // Faz uma requisição GET para a rota '/users' e retorna uma Promise com os dados recebidos.
+        HttpRequest.get('/users').then(data => {
+
+            // Percorre o array de usuários dentro do objeto `data.user`
             data.user.forEach(data => {
-                let user = new User();  // Cria uma nova instância de User.
-                user.loadFromJSON(data);  // Carrega os dados de cada usuário.
-                this.addLine(user);  // Adiciona os dados à tabela.
-            })
-        })
+
+                // Cria uma nova instância da classe `User`
+                let user = new User();
+
+                // Carrega os dados do usuário recebido na nova instância de `User`
+                user.loadFromJSON(data);
+
+                // Adiciona o usuário à interface (provavelmente uma tabela ou lista na página)
+                this.addLine(user);
+            });
+        });
+
     }
 
     // Adiciona uma nova linha à tabela com os dados do usuário.
