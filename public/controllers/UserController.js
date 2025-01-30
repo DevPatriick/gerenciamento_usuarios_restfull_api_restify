@@ -32,7 +32,7 @@ class UserController {
             btn.disabled = true;  // Desabilita o botão para evitar múltiplos cliques.
 
             // Obtém os valores do formulário de edição.
-            let value = this.getValue(this.formElPut);  
+            let value = this.getValue(this.formElPut);
             console.log(value);  // Exibe os valores no console para depuração.
 
             let index = this.formElPut.dataset.trIndex;  // Obtém o índice da linha da tabela a ser editada.
@@ -201,7 +201,7 @@ class UserController {
 
     // Obtém os usuários armazenados no localStorage.
     // Carrega todos os usuários armazenados e os exibe na tabela.
-    selectAll(){
+    selectAll() {
         // let users = User.getUserStorage();  // Obtém os usuários armazenados.
 
         let ajax = new XMLHttpRequest(); // chamando o ajax
@@ -211,32 +211,37 @@ class UserController {
         ajax.open('GET', '/users');
 
         // quando o ajax carregar ele executa o evento
-        ajax.onload = event=>{
+        ajax.onload = event => {
 
-            let obj = { users: []}
+            let obj = { user: [] }
 
-           try {
-            obj = JSON.parse(ajax.responseText);
+            try {
+                obj = JSON.parse(ajax.responseText);
+                console.log('Resposta do servidor:', obj);
+            } catch (error) {
+                console.error(`Error: ${error}`)
+            }
 
-           } catch (error) {
-            console.error(`Error: ${error}`)
-           }
+            console.log('Tipo de obj.user:', typeof obj.user);
+            console.log('obj.user:', obj.user);
 
             // responseText tras a resposta do servidor e coloca no obj
-          
-           // agora para percorrer o array tenho que colocar
-           // obj.users
-           obj.users.forEach(data => {
-            let user = new User();  // Cria uma nova instância de User.
-            user.loadFromJSON(data);  // Carrega os dados de cada usuário.
-            this.addLine(user);  // Adiciona os dados à tabela.
-        });
+
+            // agora para percorrer o array tenho que colocar
+            // obj.users
+            
+                obj.user.forEach(data => {
+                    let user = new User();  // Cria uma nova instância de User.
+                    user.loadFromJSON(data);  // Carrega os dados de cada usuário.
+                    this.addLine(user);  // Adiciona os dados à tabela.
+                })
+
         }
 
-   
+        ajax.send();
 
-        ajax.send()
-       
+
+
     }
 
     // Adiciona uma nova linha à tabela com os dados do usuário.
