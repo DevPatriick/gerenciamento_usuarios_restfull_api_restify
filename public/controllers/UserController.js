@@ -59,7 +59,7 @@ class UserController {
                     let user = new User();  // Cria uma instância de User.
                     user.loadFromJSON(result);  // Carrega os dados atualizados do usuário.
 
-                    user.save().then(user=>{
+                    user.save().then(user => {
                         tr.dataset.user = JSON.stringify(user);
 
                         // Atualiza o conteúdo HTML da linha com os novos dados do usuário.
@@ -74,7 +74,7 @@ class UserController {
                                 <button type="button" class="btn btn-danger btn-xs btn-flat">Excluir</button>
                             </td>
                         `;
-    
+
                         // Adiciona os eventos de edição e exclusão à linha atualizada.
                         this.addEventsTr(tr);
                         this.formElPut.reset();  // Limpa o formulário de edição.
@@ -83,7 +83,7 @@ class UserController {
                     });  // Salva os dados do usuário no armazenamento local.
 
                     // Atualiza os dados na linha da tabela.
-                   
+
                 },
                 (e) => {
                     console.error(e);  // Exibe erro no console caso haja problema ao carregar a foto.
@@ -113,12 +113,12 @@ class UserController {
             this.getPhoto(this.formEl).then(
                 (content) => {
                     value.photo = content;  // Adiciona a foto ao objeto de dados.
-                    value.save().then(user=>{
+                    value.save().then(user => {
                         this.addLine(user);  // Adiciona uma nova linha à tabela.
                         this.formEl.reset();  // Limpa o formulário de criação.
                         btn.disabled = false;  // Reabilita o botão de submit.
                     });  // Insere os dados do novo usuário no armazenamento local.
-                    
+
                 },
                 (e) => {
                     console.error(e);  // Exibe erro no console caso haja problema ao carregar a foto.
@@ -262,9 +262,11 @@ class UserController {
                 let user = new User();
 
                 user.loadFromJSON(JSON.parse(tr.dataset.user))  // Carrega os dados do usuário.
-                user.remove()  // Remove o usuário do armazenamento.
-                tr.remove();  // Remove a linha da tabela.
-                this.uptadeCount();  // Atualiza as contagens.
+                user.remove().then(data => {
+                    // Remove o usuário do armazenamento.
+                    tr.remove();  // Remove a linha da tabela.
+                    this.uptadeCount();  // Atualiza as contagens.
+                })
             }
         });
 

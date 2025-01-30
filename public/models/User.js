@@ -24,7 +24,7 @@ class User {
 
     // Define o ID do usuário (não utilizado diretamente no código).
     set id(value) {
-        return this._photo = value;  // O setter foi escrito incorretamente, deveria atualizar _id e não _photo.
+        return this._id = value;  // O setter foi escrito incorretamente, deveria atualizar _id e não _photo.
     }
 
     // Retorna o nome do usuário.
@@ -101,7 +101,7 @@ class User {
                     this[name] = new Date(json[name]);
                     break;
                 default:
-                    if(name.substring(0, 1) === '_')this[name] = json[name];  // Para os outros campos, apenas atribui o valor diretamente.
+                    if (name.substring(0, 1) === '_') this[name] = json[name];  // Para os outros campos, apenas atribui o valor diretamente.
             }
         }
     }
@@ -119,28 +119,28 @@ class User {
         return users;  // Retorna o array de usuários.
     }
 
-    // Método que gera um novo ID para um usuário.
-    getNewID() {
-        // Tenta obter o ID atual dos usuários no localStorage.
-        let usersID = parseInt(localStorage.getItem("userID"));
+    // // Método que gera um novo ID para um usuário.
+    // getNewID() {
+    //     // Tenta obter o ID atual dos usuários no localStorage.
+    //     let usersID = parseInt(localStorage.getItem("userID"));
 
-        // Se não houver um ID válido, começa com 0.
-        if (!usersID > 0) window.id = 0;
+    //     // Se não houver um ID válido, começa com 0.
+    //     if (!usersID > 0) window.id = 0;
 
-        // Incrementa o ID para garantir que seja único.
-        usersID++;
+    //     // Incrementa o ID para garantir que seja único.
+    //     usersID++;
 
-        // Atualiza o localStorage com o novo ID.
-        localStorage.setItem("userID", usersID);
+    //     // Atualiza o localStorage com o novo ID.
+    //     localStorage.setItem("userID", usersID);
 
-        return this.id;  // Retorna o ID gerado.
-    }
+    //     return this.id;  // Retorna o ID gerado.
+    // }
 
     // Converte o objeto User para JSON, incluindo apenas propriedades que não sejam undefined.
-    toJSON(){
+    toJSON() {
         let json = {};  // Cria um objeto JSON vazio.
         Object.keys(this).forEach(key => {
-           if(this[key] !== undefined) json[key] = this[key];  // Adiciona ao JSON apenas as propriedades definidas.
+            if (this[key] !== undefined) json[key] = this[key];  // Adiciona ao JSON apenas as propriedades definidas.
         });
 
         return json;  // Retorna o objeto JSON.
@@ -170,17 +170,6 @@ class User {
 
     // Método que remove um usuário do localStorage.
     remove() {
-        let users = User.getUserStorage();  // Obtém todos os usuários armazenados no localStorage.
-
-        // Itera sobre os usuários para encontrar o que será removido.
-        users.forEach((userData, index) => {
-            if (this._id == userData._id) {
-                // Se o ID do usuário corresponder, remove o usuário do array.
-                users.splice(index, 1);
-            }
-        });
-
-        // Atualiza o localStorage com o array de usuários (agora sem o usuário removido).
-        localStorage.setItem("users", JSON.stringify(users));
+            return  HttpRequest.delete(`/users/${this.id}`)
     }
 }
