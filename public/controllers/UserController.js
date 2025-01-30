@@ -59,29 +59,31 @@ class UserController {
                     let user = new User();  // Cria uma instância de User.
                     user.loadFromJSON(result);  // Carrega os dados atualizados do usuário.
 
-                    user.save();  // Salva os dados do usuário no armazenamento local.
+                    user.save().then(user=>{
+                        tr.dataset.user = JSON.stringify(user);
+
+                        // Atualiza o conteúdo HTML da linha com os novos dados do usuário.
+                        tr.innerHTML = ` 
+                            <td><img src="${result._photo}" alt="User Image" class="img-circle img-sm"></td>
+                            <td>${result._name}</td>
+                            <td>${result._email}</td>
+                            <td>${result._admin ? "Sim" : "Não"}</td>
+                            <td>${Utils.dateFormat(result._register)}</td>
+                            <td>
+                                <button type="button" class="btn btn-primary btn-edit btn-xs btn-flat">Editar</button>
+                                <button type="button" class="btn btn-danger btn-xs btn-flat">Excluir</button>
+                            </td>
+                        `;
+    
+                        // Adiciona os eventos de edição e exclusão à linha atualizada.
+                        this.addEventsTr(tr);
+                        this.formElPut.reset();  // Limpa o formulário de edição.
+                        btn.disabled = false;  // Reabilita o botão de submit.
+                        this.showPanelCreate();  // Exibe o painel de criação novamente.
+                    });  // Salva os dados do usuário no armazenamento local.
 
                     // Atualiza os dados na linha da tabela.
-                    tr.dataset.user = JSON.stringify(result);
-
-                    // Atualiza o conteúdo HTML da linha com os novos dados do usuário.
-                    tr.innerHTML = ` 
-                        <td><img src="${result._photo}" alt="User Image" class="img-circle img-sm"></td>
-                        <td>${result._name}</td>
-                        <td>${result._email}</td>
-                        <td>${result._admin ? "Sim" : "Não"}</td>
-                        <td>${Utils.dateFormat(result._register)}</td>
-                        <td>
-                            <button type="button" class="btn btn-primary btn-edit btn-xs btn-flat">Editar</button>
-                            <button type="button" class="btn btn-danger btn-xs btn-flat">Excluir</button>
-                        </td>
-                    `;
-
-                    // Adiciona os eventos de edição e exclusão à linha atualizada.
-                    this.addEventsTr(tr);
-                    this.formElPut.reset();  // Limpa o formulário de edição.
-                    btn.disabled = false;  // Reabilita o botão de submit.
-                    this.showPanelCreate();  // Exibe o painel de criação novamente.
+                   
                 },
                 (e) => {
                     console.error(e);  // Exibe erro no console caso haja problema ao carregar a foto.
@@ -111,10 +113,12 @@ class UserController {
             this.getPhoto(this.formEl).then(
                 (content) => {
                     value.photo = content;  // Adiciona a foto ao objeto de dados.
-                    value.save();  // Insere os dados do novo usuário no armazenamento local.
-                    this.addLine(value);  // Adiciona uma nova linha à tabela.
-                    this.formEl.reset();  // Limpa o formulário de criação.
-                    btn.disabled = false;  // Reabilita o botão de submit.
+                    value.save().then(user=>{
+                        this.addLine(user);  // Adiciona uma nova linha à tabela.
+                        this.formEl.reset();  // Limpa o formulário de criação.
+                        btn.disabled = false;  // Reabilita o botão de submit.
+                    });  // Insere os dados do novo usuário no armazenamento local.
+                    
                 },
                 (e) => {
                     console.error(e);  // Exibe erro no console caso haja problema ao carregar a foto.

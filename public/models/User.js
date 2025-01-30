@@ -2,7 +2,6 @@
 class User {
 
     // O construtor inicializa os atributos de um novo usuário.
-    // Cada usuário terá nome, gênero, data de nascimento, país, email, senha, foto, permissões de administrador e data de registro.
     constructor(name, gender, birth, country, email, password, photo, admin) {
         this._id;  // ID do usuário (a ser gerado posteriormente).
         this._name = name;  // Nome do usuário.
@@ -23,9 +22,19 @@ class User {
         return this._id;
     }
 
+    // Define o ID do usuário (não utilizado diretamente no código).
+    set id(value) {
+        return this._photo = value;  // O setter foi escrito incorretamente, deveria atualizar _id e não _photo.
+    }
+
     // Retorna o nome do usuário.
     get name() {
         return this._name;
+    }
+
+    // Define o nome do usuário.
+    set name(value) {
+        return this._name = value;
     }
 
     // Retorna o gênero do usuário.
@@ -48,9 +57,19 @@ class User {
         return this._email;
     }
 
+    // Define um novo email para o usuário.
+    set email(value) {
+        return this._email = value;
+    }
+
     // Retorna a senha do usuário (não recomendado expor senha, mas está aqui como parte do exemplo).
     get password() {
         return this._password;
+    }
+
+    // Define uma nova senha para o usuário.
+    set password(value) {
+        return this._password = value;
     }
 
     // Retorna a foto do usuário.
@@ -82,7 +101,7 @@ class User {
                     this[name] = new Date(json[name]);
                     break;
                 default:
-                    this[name] = json[name];  // Para os outros campos, apenas atribui o valor diretamente.
+                    if(name.substring(0, 1) === '_')this[name] = json[name];  // Para os outros campos, apenas atribui o valor diretamente.
             }
         }
     }
@@ -117,33 +136,41 @@ class User {
         return this.id;  // Retorna o ID gerado.
     }
 
+    // Converte o objeto User para JSON, incluindo apenas propriedades que não sejam undefined.
+    toJSON(){
+        let json = {};  // Cria um objeto JSON vazio.
+        Object.keys(this).forEach(key => {
+           if(this[key] !== undefined) json[key] = this[key];  // Adiciona ao JSON apenas as propriedades definidas.
+        });
+
+        return json;  // Retorna o objeto JSON.
+    }
+
     // Método que salva ou atualiza um usuário no localStorage.
     save() {
-        let users = User.getUserStorage();  // Obtém todos os usuários armazenados.
+        return new Promise((resolve, reject) => {
+            let promise;
+            // Se o usuário já tem um ID, faz um PUT (atualiza).
+            if (this.id) {
+                promise = HttpRequest.put(`/users/${this.id}`, this.toJSON());
+            } else {
+                // Se o usuário não tem um ID, faz um POST (cria um novo).
+                promise = HttpRequest.post(`/users`, this.toJSON());
+            }
 
-        // Se o usuário já tiver um ID (significa que é uma atualização), busca o usuário e faz a atualização.
-        if (this.id > 0) {
-            users.map(u => {
-                if (u._id == this.id) {
-                    // Se o ID do usuário corresponder, atualiza o objeto com os novos dados.
-                    Object.assign(u, this);
-                    u = this;  // Substitui o usuário antigo pelo novo.
-                }
-                return u;
+            // Quando a requisição for bem-sucedida, carrega os dados do usuário atualizados.
+            promise.then(data => {
+                this.loadFromJSON(data);  // Atualiza os dados do usuário com a resposta do servidor.
+                resolve(data);  // Resolve a Promise com os dados.
+            }).catch(e => {
+                reject(e);  // Se houver erro, rejeita a Promise com o erro.
             });
-        } else {
-            // Se o usuário não tiver ID (significa que é um novo usuário), cria um novo ID.
-            this._id = this.getNewID();
-            users.push(this);  // Adiciona o novo usuário ao array de usuários.
-        }
-
-        // Atualiza o localStorage com o array de usuários (agora com o novo usuário ou o atualizado).
-        localStorage.setItem("users", JSON.stringify(users));
+        });
     }
 
     // Método que remove um usuário do localStorage.
     remove() {
-        let users = User.getUserStorage();  // Obtém todos os usuários armazenados.
+        let users = User.getUserStorage();  // Obtém todos os usuários armazenados no localStorage.
 
         // Itera sobre os usuários para encontrar o que será removido.
         users.forEach((userData, index) => {

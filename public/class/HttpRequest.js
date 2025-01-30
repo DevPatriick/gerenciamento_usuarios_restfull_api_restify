@@ -21,7 +21,7 @@ class HttpRequest {
     }
 
     // Método genérico para realizar requisições HTTP com qualquer método (GET, POST, PUT, DELETE)
-    static request(method, url, param = {}) {
+    static request(method, url, params = {}) {
 
         return new Promise((resolve, reject) => { // Retorna uma Promise para lidar com operações assíncronas
 
@@ -52,7 +52,9 @@ class HttpRequest {
                 resolve(obj); // Resolve a Promise retornando os dados convertidos
             };
 
-            ajax.send(); // Envia a requisição para o servidor
+            ajax.setRequestHeader('Content-Type', 'application/json');
+
+            ajax.send(JSON.stringify(params)); // Envia a requisição para o servidor
         });
 
         // O primeiro parâmetro do método `open` é o tipo de requisição (GET, POST, etc.).

@@ -37,7 +37,7 @@ router.get('/:id', function(req, res, next) {
 /* PUT users listing. */
 router.put('/:id', function(req, res, next) {
   
-  client.get(`/users/${req.params.id}`, req.body, function (err, request, response, obj){
+  client.put(`/users/${req.params.id}`, req.body, function (err, request, response, obj){
    assert.ifError(err)
    
    res.json(obj)
