@@ -203,45 +203,13 @@ class UserController {
     // Carrega todos os usuários armazenados e os exibe na tabela.
     selectAll() {
         // let users = User.getUserStorage();  // Obtém os usuários armazenados.
-
-        let ajax = new XMLHttpRequest(); // chamando o ajax
-
-        // aqui eu o primeiro parametro é o metodo, no caso GET
-        // o segundo paramentro é a minha rota
-        ajax.open('GET', '/users');
-
-        // quando o ajax carregar ele executa o evento
-        ajax.onload = event => {
-
-            let obj = { user: [] }
-
-            try {
-                obj = JSON.parse(ajax.responseText);
-                console.log('Resposta do servidor:', obj);
-            } catch (error) {
-                console.error(`Error: ${error}`)
-            }
-
-            console.log('Tipo de obj.user:', typeof obj.user);
-            console.log('obj.user:', obj.user);
-
-            // responseText tras a resposta do servidor e coloca no obj
-
-            // agora para percorrer o array tenho que colocar
-            // obj.users
-            
-                obj.user.forEach(data => {
-                    let user = new User();  // Cria uma nova instância de User.
-                    user.loadFromJSON(data);  // Carrega os dados de cada usuário.
-                    this.addLine(user);  // Adiciona os dados à tabela.
-                })
-
-        }
-
-        ajax.send();
-
-
-
+        HttpRequest.get('/users').then(data=>{
+            data.user.forEach(data => {
+                let user = new User();  // Cria uma nova instância de User.
+                user.loadFromJSON(data);  // Carrega os dados de cada usuário.
+                this.addLine(user);  // Adiciona os dados à tabela.
+            })
+        })
     }
 
     // Adiciona uma nova linha à tabela com os dados do usuário.
